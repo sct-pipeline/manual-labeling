@@ -55,14 +55,24 @@ def main(args=None):
         path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
 
         if correct:
-            command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -ilabel """ + path_label + """ -o """ + path_label
+            if os.path.exists(path_label):
+                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -ilabel """ + path_label + """ -o """ + path_label
+            else:
+                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_label
+
+            subprocess.run(command, shell=True)
+
+            with open(path_json, 'w') as f:
+                json.dump(json_content, f)
         else:
-            command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_label
+            if os.path.exists(path_label):
+                pass
+            else:
+                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_label
+                subprocess.run(command, shell=True)                                                                                     
+                with open(path_json, 'w') as f:
+                    json.dump(json_content, f)
 
-        subprocess.run(command, shell=True)
-
-        with open(path_json, 'w') as f:
-            json.dump(json_content, f)
-
+                    
 if __name__ == "__main__":
     main()
