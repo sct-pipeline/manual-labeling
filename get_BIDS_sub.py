@@ -41,7 +41,6 @@ def get_parser():
     optional = parser.add_argument_group("\nOPTIONAL ARGUMENTS")
     optional.add_argument(
         '-ofile',
-        default='list_generated',
         help="name of output file (txt file). If the file already exist, the found subject will be added at the end of the file")
 
     return parser
@@ -56,14 +55,19 @@ def main(args=None):
     path_data = arguments.path
     value = arguments.value
     operation = arguments.ope
-    out = arguments.ofile
+    if arguments.ofile is not None:
+        out = arguments.ofile
+    else:
+        out = out + field + operation + value 
     path_images = (glob.glob(path_data+'/sub-*/*/*.nii.gz')) #grab all subject images path
 
     to_keep = []
     for im in path_images:
         nifti = nib.load(im)
 
-        if field == 'orientation': #for now orientation gets a special case beacus it is not in the header per se
+        if field == 'orientation':
+            #for now orientation gets a special case because it is not in the header per se
+            print(nib.aff2axcodes(nifti.affine))
             if nib.aff2axcodes(nifti.affine) == (str(value[0]), str(value[1]), str(value[2])):
                 to_keep.append(im)
         else:
@@ -71,7 +75,7 @@ def main(args=None):
                 to_keep.append(im)
 
     if len(to_keep)>0:
-        f = open(out + field + operation + value +'.txt', 'a') # 'a' option allows you to append file to a list. 
+        f = open(out + '.txt', 'a') # 'a' option allows you to append file to a list. 
         l1 = map(lambda x: x + '\n', to_keep)
         f.writelines(l1)
         f.close()
