@@ -58,8 +58,8 @@ def main(args=None):
     if arguments.ofile is not None:
         out = arguments.ofile
     else:
-        out = out + field + operation + value 
-    path_images = (glob.glob(path_data+'/sub-*/*/*.nii.gz')) #grab all subject images path
+        out =  'list-generated'+ field + operation + value 
+    path_images = (glob.glob(path_data+'/sub-*/anat/*.nii.gz')) #grab all subject images path
 
     to_keep = []
     for im in path_images:
