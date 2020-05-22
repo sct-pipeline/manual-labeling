@@ -54,10 +54,13 @@ def main(args=None):
         label_filename = label_base + '_labels-disc-manual.nii.gz'
         json_filename = label_base + '_labels-disc-manual.json'
         if arguments.o is not None:
-            os.makedirs(arguments.o+'/'+subj+'/anat')
-            path_json =  arguments.o+'/'+subj+'/anat/' + json_filename
+            if os.path.exists(arguments.o +'/'+ subj + '/anat'):
+                pass
+            else:
+                os.makedirs(arguments.o +'/'+ subj + '/anat')
+            path_json =  arguments.o+'/'+ subj +'/anat/' + json_filename
             path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
-            path_out = arguments.o+'/'+subj+'/anat/'+label_filename
+            path_out = arguments.o +'/'+ subj + '/anat/' + label_filename
         else:
             path_json = derivatives_path + subj + '/anat/' + json_filename
             path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
@@ -65,9 +68,9 @@ def main(args=None):
 
         if correct:
             if os.path.exists(path_label):
-                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -ilabel """ + path_label + """ -o """ + path_out
+                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 -ilabel """ + path_label + """ -o """ + path_out
             else:
-                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_out
+                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 -o """ + path_out
 
             subprocess.run(command, shell=True)
 
