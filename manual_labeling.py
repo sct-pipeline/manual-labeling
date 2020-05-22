@@ -29,7 +29,9 @@ def get_parser():
         '-correct',
         default=0,
         help=" if this is activated the -ilabel option will be used and therefore existing file will be open")
-
+    optional.add_argument(
+        '-o',                                                                                                              help="output path")
+    
     return parser
 
 
@@ -51,14 +53,21 @@ def main(args=None):
         subj = im_path.rsplit('/', 3)[-3]
         label_filename = label_base + '_labels-disc-manual.nii.gz'
         json_filename = label_base + '_labels-disc-manual.json'
-        path_json = derivatives_path + subj + '/anat/' + json_filename
-        path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
+        if arguments.o is not None:
+            os.makedirs(arguments.o+'/'+subj+'/anat')
+            path_json =  arguments.o+'/'+subj+'/anat/' + json_filename
+            path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
+            path_out = arguments.o+'/'+subj+'/anat/'+label_filename
+        else:
+            path_json = derivatives_path + subj + '/anat/' + json_filename
+            path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
+            path_out = path_label
 
         if correct:
             if os.path.exists(path_label):
-                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -ilabel """ + path_label + """ -o """ + path_label
+                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -ilabel """ + path_label + """ -o """ + path_out
             else:
-                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_label
+                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_out
 
             subprocess.run(command, shell=True)
 
@@ -68,7 +77,7 @@ def main(args=None):
             if os.path.exists(path_label):
                 pass
             else:
-                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_label
+                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_out
                 subprocess.run(command, shell=True)                                                                                     
                 with open(path_json, 'w') as f:
                     json.dump(json_content, f)
