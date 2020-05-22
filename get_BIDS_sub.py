@@ -5,7 +5,7 @@ import json
 import subprocess
 import nibabel as nib
 import glob
-
+import numpy
 
 def get_parser():
     # Mandatory arguments
@@ -46,6 +46,20 @@ def get_parser():
     return parser
 
 
+def get_view(im):
+    nifti = nib.load(im)
+    axis = nib.aff2axcodes(nifti.affine)
+    best_res_axis = numpy.where(nifti.header['pixdim'][1:4] == nifti.header['pixdim'][1:4].min())[0]
+    if len(best_res_axis)==3:
+        return 'valid'
+    elif len(best_res_axis)==2:
+        plane_dic={'SA':'sagittal','SP':'sagittal','IA':'sagittal','IP':'sagittal','AS':'sagittal','PS':'sagittal','AI':'sagittal','PI':'sagittal','SR':'coronal','SL':'coronal','IR':'coronal','IL':'coronal','RS':'coronal','LS':'coronal','RI':'coronal','LI':'coronal','AR':'axial','AL':'axial','PR':'axial','PL':'axial','RP':'axial','LP':'axial','RA':'axial','LA':'axial'}
+        best_plane = axis[best_res_axis[0]]+axis[best_res_axis[1]]
+        print (best_plane)
+        return (plane_dic[best_plane])
+
+
+
 def main(args=None):
     if args is None:
         args = None if sys.argv[1:] else ['--help']
@@ -63,14 +77,20 @@ def main(args=None):
 
     to_keep = []
     for im in path_images:
-        nifti = nib.load(im)
 
         if field == 'orientation':
-            #for now orientation gets a special case because it is not in the header per se
-            print(nib.aff2axcodes(nifti.affine))
+            #Orientation gets a special case because it is not in the header per se
             if nib.aff2axcodes(nifti.affine) == (str(value[0]), str(value[1]), str(value[2])):
                 to_keep.append(im)
+
+        elif field == 'view':
+            #sagittal or axial or coronal. 
+            if get_view(im) == value or get_view(im) == 'valid':
+                to_keep.append(im)
+
+
         else:
+            nifti = nib.load(im)
             if eval(str(nifti.header[field]) + operation + str(value)): #eval() allows to ask the user for '<' or '>'
                 to_keep.append(im)
 
