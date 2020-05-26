@@ -56,40 +56,52 @@ def main(args=None):
         out_path = argument.o
     else:
         out_path = derivatives_path
+        i=0
 
-    for rel_path in list_of_subj:
-        im_path = arguments.path+rel_path
-        label_base = im_path.rsplit('/', 1)[-1][:-7]  # we remove the last 7 caracters that are .nii.gz
-        subj = im_path.rsplit('/', 3)[-3]
-        label_filename = label_base + '_labels-disc-manual.nii.gz'
-        json_filename = label_base + '_labels-disc-manual.json'
+    try:
+        for rel_path in list_of_subj:
+            im_path = arguments.path+rel_path
+            label_base = im_path.rsplit('/', 1)[-1][:-7]  # we remove the last 7 caracters that are .nii.gz
+            subj = im_path.rsplit('/', 3)[-3]
+            label_filename = label_base + '_labels-disc-manual.nii.gz'
+            json_filename = label_base + '_labels-disc-manual.json'
         
-        if os.path.exists( out_path+'/'+ subj + '/anat'):
-            pass
-        else:
-            os.makedirs(out_path +'/'+ subj + '/anat')
-        path_json =  out_path +'/'+ subj +'/anat/' + json_filename
-        path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
-        path_out = out_path +'/'+ subj + '/anat/' + label_filename
-
-        if correct:
-            if os.path.exists(path_label):
-                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 -ilabel """ + path_label + """ -o """ + path_out
-            else:
-                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 -o """ + path_out
-
-            subprocess.run(command, shell=True)
-
-            with open(path_json, 'w') as f:
-                json.dump(json_content, f)
-        else:
-            if os.path.exists(path_label):
+            if os.path.exists( out_path+'/'+ subj + '/anat'):
                 pass
             else:
-                command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_out
-                subprocess.run(command, shell=True)                                                                                     
+                os.makedirs(out_path +'/'+ subj + '/anat')
+            path_json =  out_path +'/'+ subj +'/anat/' + json_filename
+            path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
+            path_out = out_path +'/'+ subj + '/anat/' + label_filename
+
+            if correct:
+                if os.path.exists(path_label):
+                    command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 -ilabel """ + path_label + """ -o """ + path_out
+                else:
+                    command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 -o """ + path_out
+
+                subprocess.run(command, shell=True)
+                i=i+1
+
                 with open(path_json, 'w') as f:
                     json.dump(json_content, f)
+            else:
+                if os.path.exists(path_label):
+                    pass
+                else:
+                    command = """sct_label_utils -i """ + im_path + """ -create-viewer 3,4,5,6,7,8,9,10,11,12,13,14,15 -o """ + path_out
+                    subprocess.run(command, shell=True)
+                    i=i+1
+                    with open(path_json, 'w') as f:
+                        json.dump(json_content, f)
+
+    except KeyboardInterrupt:
+            print('saving list')
+            following = list_of_subj[i:]
+            f = open(file_path,'w') # 'a' option allows you to append file to a list.
+            l1 = map(lambda x: x + '\n', following)
+            f.writelines(l1)
+            f.close()
 
                     
 if __name__ == "__main__":
