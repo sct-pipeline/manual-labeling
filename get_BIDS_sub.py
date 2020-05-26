@@ -81,18 +81,24 @@ def main(args=None):
         if field == 'orientation':
             #Orientation gets a special case because it is not in the header per se
             if nib.aff2axcodes(nifti.affine) == (str(value[0]), str(value[1]), str(value[2])):
-                to_keep.append(im)
+                spli = im.rsplit('/',3) #we get the last 3 element
+                subj = spli[-3]+'/'+spli[-2]+'/'+spli[-1]
+                to_keep.append(subj)
 
         elif field == 'view':
             #sagittal or axial or coronal. 
             if get_view(im) == value or get_view(im) == 'valid':
-                to_keep.append(im)
+                spli = im.rsplit('/',3) #we get the last 3 element
+                subj = spli[-3]+'/'+spli[-2]+'/'+spli[-1]
+                to_keep.append(subj)
 
 
         else:
             nifti = nib.load(im)
             if eval(str(nifti.header[field]) + operation + str(value)): #eval() allows to ask the user for '<' or '>'
-                to_keep.append(im)
+                spli = im.rsplit('/',3) #we get the last 3 element
+                subj = spli[-3]+'/'+spli[-2]+'/'+spli[-1]
+                to_keep.append(subj)
 
     if len(to_keep)>0:
         f = open(out + '.txt', 'a') # 'a' option allows you to append file to a list. 

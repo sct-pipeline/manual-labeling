@@ -15,10 +15,14 @@ def get_parser():
 
     mandatoryArguments = parser.add_argument_group("\nMANDATORY ARGUMENTS")
     mandatoryArguments.add_argument(
-        '-json',
+        '-file',
         required=True,
         help="Json file containing list of path to image file",
     )
+    mandatoryArguments.add_argument(
+            '-path',
+            required=True,
+            help="path to bids folder",)
     mandatoryArguments.add_argument(
         '-author',
         required=True,
@@ -30,7 +34,8 @@ def get_parser():
         default=0,
         help=" if this is activated the -ilabel option will be used and therefore existing file will be open")
     optional.add_argument(
-        '-o',                                                                                                              help="output path")
+            '-o',
+            help="output path. if empty it will save in BIDS_path/label/derivatives/sub/anat ")
     
     return parser
 
@@ -40,31 +45,32 @@ def main(args=None):
         args = None if sys.argv[1:] else ['--help']
     parser = get_parser()
     arguments = parser.parse_args(args=args)
-    json_path = arguments.json
+    file_path = arguments.file
     author_name = arguments.author
     correct = arguments.correct
     json_content = {"author": author_name, "label": "labels-disc-manual"}
-    list_of_subj = [line.rstrip('\n') for line in open(json_path)]
-    derivatives_base = list_of_subj[0].rsplit('/', 3)[0]  # file path is BIDS: last 3 elements are /sub-xx/anat/FILENAM
-    derivatives_path = derivatives_base + '/derivatives/labels/'
+    list_of_subj = [line.rstrip('\n') for line in open(file_path)]
+    derivatives_base = arguments.path  # file path is BIDS: last 3 elements are /sub-xx/anat/FILENAM
+    derivatives_path = derivatives_base + 'derivatives/labels'
+    if arguments.o is not None:
+        out_path = argument.o
+    else:
+        out_path = derivatives_path
 
-    for im_path in list_of_subj:
+    for rel_path in list_of_subj:
+        im_path = arguments.path+rel_path
         label_base = im_path.rsplit('/', 1)[-1][:-7]  # we remove the last 7 caracters that are .nii.gz
         subj = im_path.rsplit('/', 3)[-3]
         label_filename = label_base + '_labels-disc-manual.nii.gz'
         json_filename = label_base + '_labels-disc-manual.json'
-        if arguments.o is not None:
-            if os.path.exists(arguments.o +'/'+ subj + '/anat'):
-                pass
-            else:
-                os.makedirs(arguments.o +'/'+ subj + '/anat')
-            path_json =  arguments.o+'/'+ subj +'/anat/' + json_filename
-            path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
-            path_out = arguments.o +'/'+ subj + '/anat/' + label_filename
+        
+        if os.path.exists( out_path+'/'+ subj + '/anat'):
+            pass
         else:
-            path_json = derivatives_path + subj + '/anat/' + json_filename
-            path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
-            path_out = path_label
+            os.makedirs(out_path +'/'+ subj + '/anat')
+        path_json =  out_path +'/'+ subj +'/anat/' + json_filename
+        path_label = derivatives_path + subj + '/anat/' + label_filename  # retrieving label filename
+        path_out = out_path +'/'+ subj + '/anat/' + label_filename
 
         if correct:
             if os.path.exists(path_label):
