@@ -21,24 +21,21 @@ def get_parser():
         required=True,
         help="path to BIDS Data",
     )
-    mandatoryArguments.add_argument(
+    optional = parser.add_argument_group("\nOPTIONAL ARGUMENTS")
+    optional.add_argument(
         '-constraint',
-        required=True,
         help="constraint field. You can use a specific fields from the header or 'orientation'",
     )
 
-    mandatoryArguments.add_argument(
+    optional.add_argument(
         '-value',
-        required=True,
         help="value of constraint. Number or other. For orientation use capital letters (e.g., RPI) default operation is '==' if you wish to use something else please check the -ope option.",
     )
-    optional = parser.add_argument_group("\nOPTIONAL ARGUMENTS")
     optional.add_argument(
         '-ope',
         default='==',
         help=" operation type. You can use '<' or '>'. Don't forget to use quote (Unix will throw EOL error otherwise)")
 
-    optional = parser.add_argument_group("\nOPTIONAL ARGUMENTS")
     optional.add_argument(
         '-ofile',
         help="name of output file (txt file). If the file already exist, the found subject will be added at the end of the file")
@@ -65,6 +62,8 @@ def main(args=None):
         args = None if sys.argv[1:] else ['--help']
     parser = get_parser()
     arguments = parser.parse_args(args=args)
+    if arguments.constraint is not None and arguments.value is None:
+        parser.error("-constraint requires the -value option")
     field = arguments.constraint
     path_data = arguments.path
     value = arguments.value
@@ -93,12 +92,16 @@ def main(args=None):
                 to_keep.append(subj)
 
 
-        else:
+        elif field is not None:
             nifti = nib.load(im)
             if eval(str(nifti.header[field]) + operation + str(value)): #eval() allows to ask the user for '<' or '>'
                 spli = im.rsplit('/',3) #we get the last 3 element
                 subj = spli[-3]+'/'+spli[-2]+'/'+spli[-1]
                 to_keep.append(subj)
+        else:
+            spli = im.rsplit('/',3) #we get the last 3 element
+            subj = spli[-3]+'/'+spli[-2]+'/'+spli[-1]
+            to_keep.append(subj)
 
     if len(to_keep)>0:
         f = open(out + '.txt', 'a') # 'a' option allows you to append file to a list. 
