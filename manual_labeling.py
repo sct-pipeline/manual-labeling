@@ -53,7 +53,8 @@ def main(args=None):
     derivatives_base = arguments.path  # file path is BIDS: last 3 elements are /sub-xx/anat/FILENAM
     derivatives_path = derivatives_base + 'derivatives/labels'
     if arguments.o is not None:
-        out_path = argument.o
+        out_path = arguments.o
+        i=0
     else:
         out_path = derivatives_path
         i=0
