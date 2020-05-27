@@ -12,7 +12,6 @@ def get_parser():
     parser = argparse.ArgumentParser(
         description=" ",
         epilog="EXAMPLES:\n",
-        add_help=None,
         prog=os.path.basename(__file__).strip('.py'))
 
     mandatoryArguments = parser.add_argument_group("\nMANDATORY ARGUMENTS")
@@ -117,7 +116,6 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
-
 
 
 
