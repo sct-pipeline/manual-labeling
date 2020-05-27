@@ -75,7 +75,7 @@ def main(args=None):
         for param in [field, operation, value]:
             if param:
                 out += param
-    path_images = (glob.glob(path_data+'/sub-*/anat/*.nii.gz')) #grab all subject images path
+    path_images = (glob.glob(path_data+'/sub-*/anat/sub-*.nii.gz')) #grab all subject images path
 
     to_keep = []
     for im in path_images:
