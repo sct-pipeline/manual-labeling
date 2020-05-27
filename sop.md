@@ -8,7 +8,7 @@ python manual-labeling/manual_labeling.py -file list_todo_update.txt -author luc
 - -path : Path the Bids root folder (duke) with a '/' at the end
 - -author: Author name that will appear on the .json file 
 - -correct: Boolean. Default is 0. If correct is 1, the script will look for existing label and open them with the -ilabel option from sct_label_utils so you can verify/correct existing label.
-- -o: desired output folder. It will be created if missing. After the task, you will find the file there in BIDS convention sub-xxx/anat/sub-xxx_labels-disc-manual.nii.gz and sub-xxx/anat/sub-xxx_lables-disc-manual.json" if the argument is not use or empty files will be saved in BIDS_PATH/derivatives/labels/sub-xx/anat/xxx
+- -o: desired output folder. It will be created if missing. After the task, you will find the file there in BIDS convention sub-xxx/anat/sub-xxx_labels-disc-manual.nii.gz and sub-xxx/anat/sub-xxx_labels-disc-manual.json" if the argument is not use or empty files will be saved in BIDS_PATH/derivatives/labels/sub-xx/anat/xxx
 
 To end the script:
 Perform a keyboard interrupt from the terminal (ctrl+c). This will update the list by deleting the viewed subjects. don't forget to commit and push it on github. 
