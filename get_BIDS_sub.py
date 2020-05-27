@@ -50,9 +50,11 @@ def get_view(im):
         return 'valid'
     elif len(best_res_axis)==2:
         plane_dic={'SA':'sagittal','SP':'sagittal','IA':'sagittal','IP':'sagittal','AS':'sagittal','PS':'sagittal','AI':'sagittal','PI':'sagittal','SR':'coronal','SL':'coronal','IR':'coronal','IL':'coronal','RS':'coronal','LS':'coronal','RI':'coronal','LI':'coronal','AR':'axial','AL':'axial','PR':'axial','PL':'axial','RP':'axial','LP':'axial','RA':'axial','LA':'axial'}
-        best_plane = axis[best_res_axis[0]]+axis[best_res_axis[1]]
-        print (best_plane)
-        return (plane_dic[best_plane])
+        best_plane = axis[best_res_axis[0]] + axis[best_res_axis[1]]
+        if nifti.header['pixdim'][1:4].min()>2:
+            return 'not_valid'
+        else:
+            return plane_dic[best_plane]
 
 
 
